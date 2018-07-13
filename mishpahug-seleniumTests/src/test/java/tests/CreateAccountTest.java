@@ -3,16 +3,41 @@ package tests;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.events.AbstractWebDriverEventListener;
+import org.openqa.selenium.support.events.EventFiringWebDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.*;
 
 import org.openqa.selenium.*;
 
 public class CreateAccountTest {
-    private WebDriver driver;
+    private EventFiringWebDriver driver;
+    WebDriverWait wait;
+
+    public static class MyListener extends AbstractWebDriverEventListener {
+
+        @Override
+        public void beforeFindBy(By by, WebElement element, WebDriver driver) {
+            System.out.println("element" + by);
+        }
+
+        @Override
+        public void afterFindBy(By by, WebElement element, WebDriver driver) {
+            System.out.println(by + "found");
+        }
+
+        @Override
+        public void onException(Throwable throwable, WebDriver driver) {
+            System.out.println(throwable);
+        }
+    }
 
     @BeforeClass(alwaysRun = true)
     public void setUp() throws Exception {
-        driver = new ChromeDriver();
+        driver = new EventFiringWebDriver(new ChromeDriver());
+        driver.register(new MyListener());
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
     }
 
@@ -20,7 +45,11 @@ public class CreateAccountTest {
     public void createAccountTest1() throws Exception {
         goToTheHomePage();
         createAccount();
-        fillRegistrationForm("alona.aleiner+12@gmail.com", "a11011994", "a11011994");
+        fillRegistrationForm("alonatst+1@gmail.com", "1106tests", "1106tests");
+
+        //wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@type='submit']")));
+
+        Thread.sleep(1000);
         submitRegistration();
         fillInformationForm();
     }
@@ -28,13 +57,13 @@ public class CreateAccountTest {
     public void fillInformationForm() {
         driver.findElement(By.id("inputFirstName")).click();
         driver.findElement(By.id("inputFirstName")).clear();
-        driver.findElement(By.id("inputFirstName")).sendKeys("Alona");
+        driver.findElement(By.id("inputFirstName")).sendKeys("alona");
         driver.findElement(By.id("inputLastName")).click();
         driver.findElement(By.id("inputLastName")).clear();
-        driver.findElement(By.id("inputLastName")).sendKeys("Aleiner");
+        driver.findElement(By.id("inputLastName")).sendKeys("tst");
         driver.findElement(By.id("inputPhoneNumber")).click();
         driver.findElement(By.id("inputPhoneNumber")).clear();
-        driver.findElement(By.id("inputPhoneNumber")).sendKeys("0522123766");
+        driver.findElement(By.id("inputPhoneNumber")).sendKeys("123456789");
         driver.findElement(By.xpath("//mat-select[@id='mat-select-0']/div/div[2]")).click();
         driver.findElement(By.xpath("//mat-option[@id='mat-option-0']/span")).click();
         driver.findElement(By.cssSelector("svg.mat-datepicker-toggle-default-icon.ng-star-inserted")).click();
@@ -61,8 +90,7 @@ public class CreateAccountTest {
     driver.findElement(By.id("description")).clear();
     driver.findElement(By.id("description")).sendKeys("Hey there!");*/
 
-       /* driver.findElement(By.xpath("//div[@id='pictureTable']/div[2]/form/div[2]/button/span")).click();*/
-
+        /* driver.findElement(By.xpath("//div[@id='pictureTable']/div[2]/form/div[2]/button/span")).click();*/
 
     }
 
